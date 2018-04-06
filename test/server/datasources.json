@@ -1,0 +1,8 @@
+{
+  "emailDS": {
+    "name": "mail",
+    "connector": "loopback-connector-mailgun",
+    "apikey": "key-345363sgdgfgdg34543",
+    "domain": "test.com"
+  }
+}
