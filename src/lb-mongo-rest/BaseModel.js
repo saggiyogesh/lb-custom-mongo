@@ -33,6 +33,10 @@ function promiseOrCallback(callback, fn) {
 const replaceMongoOp = memoize(function replaceMongoOp(where) {
   where = where || {};
   if (!isEmpty(where)) {
+    if (where.id) {
+      where._id = where.id;
+      delete where.id;
+    }
     where = JSON.stringify(where);
     if (HAS_LB_OP.test(where)) {
       where = where
