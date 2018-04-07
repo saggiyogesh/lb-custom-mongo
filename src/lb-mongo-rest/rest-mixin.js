@@ -25,7 +25,7 @@ exports.restify = function restify(name, model) {
   const className = pluralize(name);
   const sharedClass = new SharedClass(className, model);
   _remotes.addClass(sharedClass);
-  _remoteMethods[name].forEach((m) => {
+  _remoteMethods[name] && _remoteMethods[name].forEach((m) => {
     m(sharedClass);
   });
   model.sharedClass = sharedClass;
