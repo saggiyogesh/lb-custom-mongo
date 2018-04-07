@@ -3,6 +3,7 @@ const path = require('path');
 const assert = require('assert');
 const { init, insert, restify } = require('./rest-mixin');
 const { register } = require('./LBModelsRegistry');
+const BaseModel = require('./BaseModel');
 
 const _modelsExec = new Map();
 const _modelsConfig = new Map();
@@ -54,7 +55,15 @@ function configureModels(app, modelsDir) {
       // configs
       const modelName = dirName;
       const config = _modelsConfig.get(modelName);
-      const { module } = _modelsExec.get(modelName);
+      const exec = _modelsExec.get(modelName);
+      let module;
+      if (!exec) {
+        class Klass extends BaseModel { }
+        module = Klass;
+      } else {
+        module = exec.module;
+      }
+
       insert(module, config);
       register(module, config.schema);
 
