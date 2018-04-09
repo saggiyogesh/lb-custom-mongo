@@ -178,9 +178,9 @@ class BaseModel {
 
   static async deleteById(id) {
     const where = { id };
-    await this.beforeUpdate({ where });
+    await this.beforeDelete({ where });
     const res = this._deleteById(id);
-    await this.afterUpdate({ where });
+    await this.afterDelete({ where });
     return res;
   }
 
