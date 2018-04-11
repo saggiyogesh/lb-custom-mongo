@@ -1,6 +1,7 @@
 module.exports = {
   name: 'Demo',
   properties: {
+    _id: String,
     email: {
       type: String
     },

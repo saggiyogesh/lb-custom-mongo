@@ -2,13 +2,12 @@ const { BaseModel, loadMixin } = require('../../../../src/lb-mongo-rest');
 
 class Demo extends BaseModel {
   static async greet() {
-    // console.log('find-----', await this.findP__());
-    // console.log('user find', await this.app.models.User.find());
     const demo = await this.findOne();
     console.log('getName instance method', await demo.getName());
 
     const mixinMethodCount = await this.mixinStaticMethod();
-    console.log('mixinMethodCount', mixinMethodCount);
+    console.log('mixinMethodCount', mixinMethodCount, await this.findL());
+    console.log('native mongo', await this.models.User.findN());
 
     await this.upsert({
       a: 1

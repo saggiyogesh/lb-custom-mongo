@@ -62,6 +62,8 @@ function configureModels(app, modelsDir) {
         module = Klass;
       } else {
         module = exec.module;
+        assert(module.toString().indexOf('extends BaseModel') > -1,
+          `Model '${modelName}' must extend 'BaseModel'`);
       }
 
       insert(module, config);

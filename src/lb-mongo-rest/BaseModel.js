@@ -1,9 +1,9 @@
-const memoize = require('memoizee');
-// const { ObjectId } = require('mongodb');
-const { isEmpty } = require('lodash');
+const { ObjectId } = require('mongodb');
 const Promise = require('bluebird');
-const HAS_LB_OP = /"or"|"and"|"gt"|"gte"|"lte"|"lt"|"inq"|"nin"/;
-
+const LeanMongooseFinders = require('./LeanMongooseFinders');
+const NativeMongo = require('./NativeMongo');
+const mix = require('../mix');
+const { prepareMongoOpts, replaceMongoOp } = require('../lbMongoFilter');
 /**
  * copied from mongoose utils.js
  */
@@ -30,54 +30,7 @@ function promiseOrCallback(callback, fn) {
   });
 };
 
-const replaceMongoOp = memoize(function replaceMongoOp(where) {
-  where = where || {};
-  if (!isEmpty(where)) {
-    if (where.id) {
-      where._id = where.id;
-      delete where.id;
-    }
-    where = JSON.stringify(where);
-    if (HAS_LB_OP.test(where)) {
-      where = where
-        .replace('"or"', '"$or"')
-        .replace('"and"', '"$and"')
-        .replace('"gt"', '"$gt"')
-        .replace('"gte"', '"$gte"')
-        .replace('"lt"', '"$lt"')
-        .replace('"lte"', '"$lte"')
-        .replace('"inq"', '"$in"')
-        .replace('"nin"', '"$nin"');
-    }
-    return JSON.parse(where);
-  }
-  return where;
-});
-
-const modifySortForMongo = memoize(function modifySortForMongo(sortStr) {
-  if (!sortStr) {
-    return;
-  }
-  const arr = sortStr.split(/\s+/);
-  const s = {};
-  s[arr[0]] = arr[1] === 'ASC' ? 1 : -1;
-  return s;
-});
-
-function prepareMongoOpts(filter = {}) {
-  const { fields = {}, limit, order, skip, where = {} } = filter;
-  const sort = modifySortForMongo(order);
-  return { where: replaceMongoOp(where), fields, skip, limit, sort };
-}
-
-// function coerceId(id) {
-//   if (!(id instanceof ObjectId)) {
-//     id = ObjectId(id);
-//   }
-//   return id;
-// }
-
-class BaseModel {
+class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
   static async beforeCreate() { }
   static async afterCreate() { }
 
@@ -93,6 +46,10 @@ class BaseModel {
 
   static async create(data) {
     await this.beforeCreate({ instance: data });
+    // check if _id is not ObjectId for this model
+    if (this.schemaDef.properties._id && !data._id) {
+      data._id = ObjectId();
+    }
     let instance = await this._create(data);
     if (Array.isArray(instance)) {
       instance = instance[0];
@@ -107,7 +64,9 @@ class BaseModel {
     delete data.id;
     delete data._id;
     // id = coerceId(id);
-    if (!id) {
+    const isExists = await this.countM({ _id: id });
+    if (!isExists) {
+      data._id = id;
       return await this.create(data);
     } else {
       const where = { id: id };
@@ -144,12 +103,12 @@ class BaseModel {
 
   static _findById(id, filter, cb) {
     const { fields, skip, limit, sort } = prepareMongoOpts(filter);
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      return promiseOrCallback(cb, fn => {
-        this.findOneM({ _id: id }, fields, { skip, limit, sort }, fn);
-      });
-    }
-    const where = { id };
+    // if (ObjectId.isValid(id)) {
+    //   return promiseOrCallback(cb, fn => {
+    //     this.findOneM({ _id: id }, fields, { skip, limit, sort }, fn);
+    //   });
+    // }
+    const where = { _id: id };
     return promiseOrCallback(cb, fn => { this.findOneM(where, fields, { skip, limit, sort }, fn); });
   }
 
@@ -184,10 +143,6 @@ class BaseModel {
     return res;
   }
 
-  static getNativeCollection() {
-    return this.collection;
-  }
-
   updateAttribute(name, value, options) {
     const data = {};
     data[name] = value;
@@ -200,10 +155,11 @@ class BaseModel {
     delete data._id;
     // id = coerceId(id);
     const currentInstance = this._doc;
-    const where = { _id: id };
-    await this.constructor.beforeUpdate({ currentInstance, where });
-    const instance = await this.constructor.findOneAndUpdate(where, data, { new: true });
-    await this.constructor.afterUpdate({ instance, where });
+    const where = { id };
+    const _data = Object.assign({}, data, { id });
+    await this.constructor.beforeUpdate({ currentInstance, where, data: _data });
+    const instance = await this.constructor.findOneAndUpdate({ _id: id }, data, { new: true });
+    await this.constructor.afterUpdate({ instance, where, data: _data });
     return instance;
   }
 }

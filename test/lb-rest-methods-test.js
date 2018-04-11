@@ -3,6 +3,7 @@ import axios from 'axios';
 const getPort = require('get-port');
 const sleep = require('then-sleep');
 const { isDate } = require('lodash');
+const { ObjectId } = require('mongodb');
 const OK = 'OK';
 
 let url, caller;
@@ -21,6 +22,9 @@ async function startApp(params) {
   await sleep(100);
 }
 
+function randomStr() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
 test.before(async t => {
   let port = 5000;
   process.env.PORT = port = await getPort();
@@ -33,8 +37,8 @@ test.before(async t => {
   });
 });
 
-async function findOne() {
-  return await caller.get('/Demos/findOne');
+async function findById(id) {
+  return await caller.get('/Users/' + id);
 }
 
 async function create(method = 'post', no) {
@@ -92,9 +96,100 @@ test('create', async t => {
   await createSpec(t);
 });
 
+test('create + findById with _id defined as String', async t => {
+  // case when _id is passed
+  const _id = randomStr();
+  const { statusText, data } = await caller.post('/Users', {
+    email: 'saggiyogesh@gmail.com',
+    _id
+  });
+
+  console.log('data', data);
+  t.is(statusText, OK);
+  t.is(data.email, 'saggiyogesh@gmail.com');
+  t.is(data.id, _id);
+  t.falsy(ObjectId.isValid(data.id));
+  t.truthy(isDate(new Date(data.creationTime)));
+  t.truthy(isDate(new Date(data.lastUpdationTime)));
+
+  // validate findById
+  const res1 = await findById(_id);
+  console.log('res.data', res1.data);
+  t.is(res1.statusText, OK);
+  t.is(res1.data.email, 'saggiyogesh@gmail.com');
+  t.is(res1.data.id, _id);
+
+  // case when _id is not passed, default ObjectId is inserted
+  const res = await caller.post('/Users', {
+    email: 'saggiyogesh@gmail.com'
+  });
+
+  console.log('res.data', res.data);
+  t.is(res.statusText, OK);
+  t.is(res.data.email, 'saggiyogesh@gmail.com');
+  t.truthy(ObjectId.isValid(res.data.id));
+  t.truthy(isDate(new Date(data.creationTime)));
+  t.truthy(isDate(new Date(data.lastUpdationTime)));
+
+  // validate findById
+  const res2 = await findById(res.data.id);
+  console.log('res.data', res1.data);
+  t.is(res2.statusText, OK);
+  t.is(res2.data.email, 'saggiyogesh@gmail.com');
+  t.is(res2.data.id, res.data.id);
+  t.truthy(ObjectId.isValid(res2.data.id));
+});
+
 test('upsert', async t => {
   const oldRec = await createSpec(t, 'put');
   await updateSpec(t, oldRec);
+});
+
+async function upsertSpecWhenIdIsString(_id, t) {
+  // case create
+  const { statusText, data } = await caller.put('/Users', {
+    email: 'saggiyogesh@gmail.com',
+    no: 11,
+    _id
+  });
+  t.is(statusText, OK);
+  t.is(data.email, 'saggiyogesh@gmail.com');
+  t.is(data.no, 11);
+  if (_id) {
+    t.is(data.id, _id);
+  } else {
+    t.truthy(ObjectId.isValid(data.id));
+  }
+  t.truthy(isDate(new Date(data.creationTime)));
+  t.truthy(isDate(new Date(data.lastUpdationTime)));
+
+  // case update
+  const res = await caller.put('/Users', {
+    email: 'saggiyogesh@gmail.com',
+    no: 212,
+    _id
+  });
+  t.is(res.statusText, OK);
+  t.is(res.data.email, 'saggiyogesh@gmail.com');
+  t.not(res.data.no, 11);
+  t.is(res.data.no, 212);
+  if (_id) {
+    t.is(res.data.id, _id);
+  } else {
+    t.truthy(ObjectId.isValid(res.data.id));
+  }
+  t.truthy(isDate(new Date(data.creationTime)));
+  t.truthy(isDate(new Date(data.lastUpdationTime)));
+  t.truthy(new Date(res.data.lastUpdationTime).getTime() > new Date(data.lastUpdationTime).getTime());
+}
+test('upsert with _id defined as String', async t => {
+  // case create when _id is passed
+  const _id = randomStr();
+  // case when _id is passed
+  await upsertSpecWhenIdIsString(_id, t);
+
+  // case when _id not passed, ObjectId will be assigned
+  await upsertSpecWhenIdIsString(null, t);
 });
 
 test('updateAttrs', async t => {
