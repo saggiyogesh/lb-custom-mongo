@@ -85,7 +85,9 @@ function configureModels(app, modelsDir) {
       model.schemaDef = config.schema;
 
       if (_modelMixins.has(modelName)) {
-        _modelMixins.get(modelName)(model);
+        _modelMixins.get(modelName).forEach((mixin) => {
+          mixin(model);
+        });
       }
       restify(modelName, model);
       app.models[modelName] = model;
@@ -94,8 +96,13 @@ function configureModels(app, modelsDir) {
 };
 
 exports.loadMixin = function loadMixin(model, mixinPath) {
+  const { name } = model;
   const p = path.resolve(_mixinsDir, mixinPath);
-  console.log('process.cwd()', process.cwd());
-  _modelMixins.set(model.name, require(p));
-  console.log('fp', p);
+  let arr = [];
+  if (!_modelMixins.has(name)) {
+    _modelMixins.set(model.name, arr);
+  } else {
+    arr = _modelMixins.get(model.name);
+  }
+  arr.push(require(p));
 };
