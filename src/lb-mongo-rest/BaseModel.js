@@ -127,7 +127,7 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
   }
 
   static updateAll(where, data, cb) {
-    this._updateAll(where, data, cb);
+    return this._updateAll(where, data, cb);
   }
 
   static _deleteById(id) {
