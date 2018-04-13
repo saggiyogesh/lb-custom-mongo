@@ -6,6 +6,13 @@ let _remotes;
 exports.init = function init(app) {
   _remotes = remoting.create({
     cors: false,
+    json: {
+      limit: '20mb'
+    },
+    urlencoded: {
+      extended: true,
+      limit: '100kb'
+    },
     errorHandler: {
       handler: function handler(error, req, res, next) {
         if (error instanceof Error) {
