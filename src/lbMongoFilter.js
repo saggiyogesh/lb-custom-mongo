@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb');
 const memoize = require('memoizee');
 const { isEmpty } = require('lodash');
-const HAS_LB_OP = /"or"|"and"|"gt"|"gte"|"lte"|"lt"|"inq"|"nin"/;
+const HAS_LB_OP = /"or"|"and"|"gt"|"gte"|"lte"|"lt"|"inq"|"nin"|"neq"/;
 const DEFAULT_LIMIT = 20;
 
 /**
@@ -32,7 +32,8 @@ exports.replaceMongoOp = memoize(function replaceMongoOp(where, convertToObjectI
         .replace('"lt"', '"$lt"')
         .replace('"lte"', '"$lte"')
         .replace('"inq"', '"$in"')
-        .replace('"nin"', '"$nin"');
+        .replace('"nin"', '"$nin"')
+        .replace('"neq"', '"$ne"');
     }
     return JSON.parse(where);
   }
