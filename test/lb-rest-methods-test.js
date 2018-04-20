@@ -4,6 +4,7 @@ const getPort = require('get-port');
 const sleep = require('then-sleep');
 const { isDate } = require('lodash');
 const { ObjectId } = require('mongodb');
+const { randomStr } = require('./TestUtils');
 const OK = 'OK';
 
 let url, caller;
@@ -22,9 +23,6 @@ async function startApp(params) {
   await sleep(100);
 }
 
-function randomStr() {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-};
 test.before(async t => {
   let port = 5000;
   process.env.PORT = port = await getPort();
