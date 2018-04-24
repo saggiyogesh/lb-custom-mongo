@@ -23,4 +23,17 @@ module.exports = function (Demo) {
       }
     }
   );
+
+  Demo.remoteMethod(
+    'native', {
+      http: {
+        path: '/n',
+        verb: 'get'
+      },
+      returns: {
+        arg: 'results',
+        type: 'string'
+      }
+    }
+  );
 };

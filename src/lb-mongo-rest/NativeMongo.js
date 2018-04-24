@@ -15,7 +15,7 @@ module.exports = class NativeMongo {
    * @returns {Promise}
    */
   static async findN(filter) {
-    const { where, fields, skip, limit, sort } = prepareMongoOpts(filter, true);
+    const { where, fields, skip, limit, sort } = prepareMongoOpts(filter);
     const data = await this.collection.find(where, { fields, skip, limit, sort }).toArray();
     return changeToId(data);
   }
@@ -27,7 +27,7 @@ module.exports = class NativeMongo {
    * @returns {Promise}
    */
   static async findOneN(filter) {
-    const { where, fields, skip, limit, sort } = prepareMongoOpts(filter, true);
+    const { where, fields, skip, limit, sort } = prepareMongoOpts(filter);
     const data = await this.collection.findOne(where, { fields, skip, limit, sort });
     return changeToId(data);
   }
@@ -40,7 +40,7 @@ module.exports = class NativeMongo {
    * @returns {Promise}
    */
   static async findByIdN(id, filter) {
-    const { fields, skip, limit, sort } = prepareMongoOpts(filter, true);
+    const { fields, skip, limit, sort } = prepareMongoOpts(filter);
     const data = await this.collection.findOne({ _id: id }, { fields, skip, limit, sort });
     return changeToId(data);
   }

@@ -7,7 +7,6 @@ class Demo extends BaseModel {
 
     const mixinMethodCount = await this.mixinStaticMethod();
     console.log('mixinMethodCount', mixinMethodCount, await this.findL());
-    console.log('native mongo', await this.models.User.findN());
 
     await this.upsert({
       a: 1
@@ -17,6 +16,10 @@ class Demo extends BaseModel {
     return demo;
   }
 
+  static native() {
+    return this.findOneN();
+  }
+
   static async beforeCreate() {
     console.log('demo before create....');
   }
@@ -24,7 +27,7 @@ class Demo extends BaseModel {
   getName() {
     return this.constructor.findOne();
   }
-};
+}
 
 loadMixin(Demo, 'mixin');
 

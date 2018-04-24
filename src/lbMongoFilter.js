@@ -12,30 +12,9 @@ const DEFAULT_LIMIT = 20;
  */
 exports.replaceMongoOp = memoize(function replaceMongoOp(where, convertToObjectId) {
   where = where || {};
-  if (!isEmpty(where)) {
-    if (where.id) {
-      if (convertToObjectId) {
-        const { id } = where;
-        ObjectId.isValid(id) && (where._id = ObjectId(id));
-      } else {
-        where._id = where.id;
-      }
-      delete where.id;
-    }
-    where = JSON.stringify(where);
-    if (HAS_LB_OP.test(where)) {
-      where = where
-        .replace('"or"', '"$or"')
-        .replace('"and"', '"$and"')
-        .replace('"gt"', '"$gt"')
-        .replace('"gte"', '"$gte"')
-        .replace('"lt"', '"$lt"')
-        .replace('"lte"', '"$lte"')
-        .replace('"inq"', '"$in"')
-        .replace('"nin"', '"$nin"')
-        .replace('"neq"', '"$ne"');
-    }
-    return JSON.parse(where);
+  if (!isEmpty(where) && where.id) {
+    where._id = where.id;
+    delete where.id;
   }
   return where;
 });
