@@ -14,6 +14,7 @@ exports.register = function modelDecorator(Class, config, options = {}) {
 
   options.strict = false;
   options.id = false;
+  options.minimize = false;
   options.collection = Class.name;
   const schemaInstance = new Schema(config.properties, options);
   schemaInstance.loadClass(Class);
