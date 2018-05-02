@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 const memoize = require('memoizee');
 const { isEmpty } = require('lodash');
 const HAS_LB_OP = /"or"|"and"|"gt"|"gte"|"lte"|"lt"|"inq"|"nin"|"neq"/;
-const DEFAULT_LIMIT = 20;
+const DEFAULT_LIMIT = 5000; // :'(
 
 /**
  * Memoized Function constructs loopback's where filter to mongo native conditions
