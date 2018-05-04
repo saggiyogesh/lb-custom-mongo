@@ -156,7 +156,6 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
     // id = coerceId(id);
     const currentInstance = this._doc;
     const where = { id };
-    // const _data = Object.assign({}, data, { id });
     data.id = id;
     await this.constructor.beforeUpdate({ currentInstance, where, data });
     const instance = await this.constructor.findOneAndUpdate({ _id: id }, data, { new: true });
