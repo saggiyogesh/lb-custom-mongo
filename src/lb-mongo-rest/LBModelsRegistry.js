@@ -1,4 +1,5 @@
 // const assert = require('assert');
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -20,6 +21,10 @@ exports.register = function modelDecorator(Class, config, options = {}) {
   schemaInstance.loadClass(Class);
 
   schemaInstance.virtual('id').get(function () {
+    if (ObjectId.isValid(this._id)) {
+      // TODO did for loopback compatibility, must be removed once schema is implemented
+      return String(this._id);
+    }
     return this._id;
   });
 
