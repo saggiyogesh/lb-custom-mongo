@@ -2,23 +2,23 @@ module.exports = {
   name: 'Demo',
   properties: {
     email: {
-      type: String
+      $type: String
     },
     name: {
-      type: String
+      $type: String
     },
     no: {
-      type: Number,
+      $type: Number,
       default: 10
     },
     creationTime: {
-      type: Date
+      $type: Date
     },
     lastUpdationTime: {
-      type: Date
+      $type: Date
     },
     thumbnail: {
-      type: Object
+      $type: Object
     }
   },
   lilACL: {

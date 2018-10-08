@@ -28,8 +28,8 @@ boot(app, __dirname, function (err) {
   process.on('uncaughtException', () => {
     server.close();
   });
+});
 
-  process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-  });
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });

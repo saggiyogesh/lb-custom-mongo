@@ -13,6 +13,8 @@ exports.register = function modelDecorator(Class, config, options = {}) {
     options.versionKey = false;
   }
 
+  options.typeKey = '$type';
+
   options.strict = false;
   options.id = false;
   options.minimize = false;
@@ -20,7 +22,7 @@ exports.register = function modelDecorator(Class, config, options = {}) {
   const schemaInstance = new Schema(config.properties, options);
   schemaInstance.loadClass(Class);
 
-  schemaInstance.virtual('id').get(function () {
+  schemaInstance.virtual('id').get(function() {
     if (ObjectId.isValid(this._id)) {
       // TODO did for loopback compatibility, must be removed once schema is implemented
       return String(this._id);
@@ -29,10 +31,19 @@ exports.register = function modelDecorator(Class, config, options = {}) {
   });
 
   schemaInstance.set('toJSON', {
-    virtuals: true, getters: true, transform: function (doc, ret) { delete ret._id; }
+    virtuals: true,
+    getters: true,
+    transform: function(doc, ret) {
+      delete ret._id;
+    }
   });
 
-  schemaInstance.set('toObject', { getters: true, transform: function (doc, ret) { delete ret._id; } });
+  schemaInstance.set('toObject', {
+    getters: true,
+    transform: function(doc, ret) {
+      delete ret._id;
+    }
+  });
   mongoose.model(config.name, schemaInstance);
 };
 

@@ -3,19 +3,19 @@ module.exports = {
   properties: {
     _id: String,
     email: {
-      type: String
+      $type: String
     },
     userName: {
-      type: String
+      $type: String
     },
     createdAt: {
-      type: Date
+      $type: Date
     },
     lastModifiedAt: {
-      type: Date
+      $type: Date
     },
     thumbnail: {
-      type: Object
+      $type: Object
     }
   },
   lilACL: {
