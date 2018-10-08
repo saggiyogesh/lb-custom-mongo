@@ -1,6 +1,6 @@
 {
   "name": "lb-custom-mongo",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "main": "src/lb-mongo-rest/index.js",
   "scripts": {
     "lint": "eslint src/**/*.js",
