@@ -3,6 +3,15 @@ const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// conditional $type for configured schemas
+console.log('TYPE_MODELS--', process.env.TYPE_MODELS);
+const TYPE_MODELS = {};
+if (process.env.TYPE_MODELS) {
+  for (const val of process.env.TYPE_MODELS.split(',')) {
+    TYPE_MODELS[val] = val;
+  }
+}
+
 exports.register = function modelDecorator(Class, config, options = {}) {
   // options.timestamps = true;
   if (!options.hasOwnProperty('autoIndex')) {
@@ -13,7 +22,9 @@ exports.register = function modelDecorator(Class, config, options = {}) {
     options.versionKey = false;
   }
 
-  options.typeKey = '$type';
+  if (TYPE_MODELS[Class.name]) {
+    options.typeKey = '$type';
+  }
 
   options.strict = false;
   options.id = false;

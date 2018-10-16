@@ -4,7 +4,7 @@
   "main": "src/lb-mongo-rest/index.js",
   "scripts": {
     "lint": "eslint src/**/*.js",
-    "test": "ava test/*-test.js",
+    "test": "TYPE_MODELS=Demo ava test/*-test.js",
     "dev": "nodemon --watch src --exec babel-node test/server/server.js"
   },
   "private": true,
