@@ -8,7 +8,7 @@ let url, app;
 
 function afterAppStarted() {
   return new Promise((resolve, reject) => {
-    process.on('appStarted', function () {
+    process.on('appStarted', function() {
       resolve('1');
     });
   });
@@ -46,55 +46,57 @@ async function findByIdN(id, model = 'Demo') {
   return await app.models[model].findByIdN(id);
 }
 
-// skipped till schema is not fixed 
-test.skip('findN with _id or id with where conditions', async t => {
-  const c = await create();
-  let r = await app.models.Demo.findN({ where: { _id: c.id } });
-  console.log('cccc', c);
-  console.log('rrrr', r);
-  t.truthy(r.length === 1);
-  t.truthy(r[0].id.equals(c.id));
+// for checking oid string with oid obj
+function equals(obj1, obj2) {
+  return typeof obj1 === typeof obj2 && obj1.equals(obj2);
+}
 
-  r = await app.models.Demo.findN({ where: { id: c.id } });
+test('findN with _id or id with where conditions', async t => {
+  const c = await create();
+  let r = await app.models.Demo.findN({ where: { _id: ObjectId(c.id) } });
   console.log('cccc', c);
   console.log('rrrr', r);
   t.truthy(r.length === 1);
-  t.truthy(r[0].id.equals(c.id));
+  t.truthy(equals(r[0].id, c._id));
+
+  r = await app.models.Demo.findN({ where: { id: ObjectId(c.id) } });
+  console.log('rrrr1', r);
+  t.truthy(r.length === 1);
+  t.truthy(equals(r[0].id, c._id));
 
   // test $in
-  r = await app.models.Demo.findN({ where: { _id: { $in: [c.id] } } });
-  console.log('cccc', c);
-  console.log('rrrr', r);
+  r = await app.models.Demo.findN({ where: { _id: { $in: [ObjectId(c.id)] } } });
+  console.log('rrrr2', r);
   t.truthy(r.length === 1);
-  t.truthy(r[0].id.equals(c.id));
+  t.truthy(equals(r[0].id, c._id));
 
-  r = await app.models.Demo.findN({ where: { id: { $in: [c.id] } } });
-  console.log('cccc', c);
-  console.log('rrrr', r);
+  r = await app.models.Demo.findN({ where: { id: { $in: [ObjectId(c.id)] } } });
+  console.log('rrrr3', r);
   t.truthy(r.length === 1);
-  t.truthy(r[0].id.equals(c.id));
+  t.truthy(equals(r[0].id, c._id));
 });
 
-// skipped till schema is not fixed 
-test.skip('findOneN with _id or id with where conditions', async t => {
+test('findOneN with _id or id with where conditions', async t => {
   const c = await create();
-  let r = await app.models.Demo.findOneN({ where: { _id: c.id } });
-  console.log('cccc', c);
-  console.log('rrrr', r);
-  t.truthy(r.id.equals(c.id));
+  let r = await app.models.Demo.findOneN({ where: { _id: ObjectId(c.id) } });
+  console.log('cccc', c, typeof c._id);
+  console.log('rrrr', r, typeof r.id);
+  t.truthy(equals(r.id, c._id));
 
-  r = await app.models.Demo.findOneN({ where: { id: c.id } });
-  console.log('cccc', c);
-  console.log('rrrr', r);
-  t.truthy(r.id.equals(c.id));
+  r = await app.models.Demo.findOneN({ where: { id: ObjectId(c.id) } });
+  console.log('rrrr1', r, typeof r.id);
+  t.truthy(equals(r.id, c._id));
 });
 
-// skipped till schema is not fixed 
-test.skip('check for id as ObjectId', async t => {
+test('check for id as string', async t => {
   const c = await create();
-  const f = await findByIdN(c.id);
+  const f = await findByIdN(ObjectId(c.id));
+  t.is(typeof c.id, 'string');
+
   t.truthy(f.id instanceof ObjectId);
-  t.truthy(f.id.equals(c.id));
+  t.truthy(c._id instanceof ObjectId);
+
+  t.truthy(equals(f.id, c._id));
 });
 
 test('check for id as String and valid ObjectId', async t => {
@@ -111,4 +113,14 @@ test('check for id as String and valid ObjectId', async t => {
   t.is(typeof f1.id, 'string');
   t.truthy(ObjectId.isValid(f1.id));
   t.truthy(f1.id === c1.id);
+});
+
+test('aggregateN', async t => {
+  const r = await app.models.Demo.aggregateN([{ $match: { email: 'saggiyogesh@gmail.com' } }]);
+  t.truthy(Array.isArray(r));
+});
+
+test('countN with _id or id with where conditions', async t => {
+  let r = await app.models.Demo.countN({ email: 'saggiyogesh@gmail.com' });
+  t.truthy(Number.isInteger(r));
 });
