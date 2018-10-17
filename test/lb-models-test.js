@@ -8,7 +8,7 @@ let url, app;
 
 function afterAppStarted() {
   return new Promise((resolve, reject) => {
-    process.on('appStarted', function () {
+    process.on('appStarted', function() {
       resolve('1');
     });
   });
@@ -46,13 +46,14 @@ async function findById(id, model = 'Demo') {
   return await app.models[model].findById(id);
 }
 
-// skipped till schema is fixed
-test.skip('check for id as ObjectId', async t => {
+test('check for id as ObjectId', async t => {
   const c = await create();
-  t.truthy(c.id instanceof ObjectId);
+  console.log('ccc', c);
+  t.is(typeof c.id, 'string'); // maintain compatibility with old loopback code
 
-  const f = await findById(c.id);
-  t.truthy(f.id instanceof ObjectId);
+  const f = await findById(ObjectId(c._id));
+  t.truthy(f._id instanceof ObjectId);
+  t.is(typeof f.id, 'string');
 });
 
 test('check for id as String and valid ObjectId', async t => {
