@@ -81,7 +81,6 @@ module.exports = class NativeMongo {
    * @param {Object} options - Optional settings.
    * @returns {Promise}
    */
-
   static aggregateN(pipeline, options) {
     return this.collection.aggregate(pipeline, options).toArray();
   }
