@@ -1,5 +1,5 @@
 function mix(...mixins) {
-  class Mix { }
+  class Mix {}
 
   // Programmatically add all the methods and accessors
   // of the mixins to class Mix.

@@ -1,9 +1,9 @@
 const { pluralize } = require('inflection');
 const remoting = require('strong-remoting');
-const SharedClass = remoting.SharedClass;
+const { SharedClass } = remoting;
 
 let _remotes;
-exports.init = function init(app) {
+exports.init = function(app) {
   _remotes = remoting.create({
     cors: false,
     json: {
@@ -14,7 +14,7 @@ exports.init = function init(app) {
       limit: '100kb'
     },
     errorHandler: {
-      handler: function handler(error, req, res, next) {
+      handler: (error, req, res, next) => {
         if (error instanceof Error) {
           console.log(error);
         }
@@ -28,13 +28,14 @@ exports.init = function init(app) {
 };
 
 const _remoteMethods = {};
-exports.restify = function restify(name, model) {
+exports.restify = function(name, model) {
   const className = pluralize(name);
   const sharedClass = new SharedClass(className, model);
   _remotes.addClass(sharedClass);
-  _remoteMethods[name] && _remoteMethods[name].forEach((m) => {
-    m(sharedClass);
-  });
+  _remoteMethods[name] &&
+    _remoteMethods[name].forEach(m => {
+      m(sharedClass);
+    });
   model.sharedClass = sharedClass;
 };
 
@@ -45,43 +46,43 @@ function convertNullToNotFoundError(ctx, cb) {
   const id = ctx.getArgByName('id');
   const msg = `Unknown model: ${modelName}, id: ${id}`;
   const error = new Error(msg);
-  error.statusCode = error.status = 404;
+  error.statusCode = 404;
+  error.status = 404;
   error.code = 'MODEL_NOT_FOUND';
   cb(error);
 }
 
-exports.insert = function insertREST(klass, model, config) {
+exports.insert = function(klass /* , model, config */) {
   const className = pluralize(klass.name);
   _remoteMethods[klass.name] = _remoteMethods[klass.name] || [];
-  klass.beforeRemote = function (name, fn) {
-    _remotes.before(className + '.' + name, function (ctx, next) {
+  klass.beforeRemote = function(name, fn) {
+    _remotes.before(className + '.' + name, (ctx, next) => {
       return fn(ctx, ctx.result, next);
     });
   };
 
-  klass.afterRemote = function (name, fn) {
-    _remotes.after(className + '.' + name, function (ctx, next) {
+  klass.afterRemote = function(name, fn) {
+    _remotes.after(className + '.' + name, (ctx, next) => {
       return fn(ctx, ctx.result, next);
     });
   };
 
-  klass.remoteMethod = function remoteMethod(name, options = {}) {
+  klass.remoteMethod = function(name, options = {}) {
     if (options.isStatic === false) {
       options.isStatic = false;
     } else {
       options.isStatic = true;
     }
-    _remoteMethods[klass.name].push((sharedClass) => {
+    _remoteMethods[klass.name].push(sharedClass => {
       sharedClass.defineMethod(name, options);
     });
   };
 
-  klass.sharedCtor = function (data, id, options, fn) {
+  klass.sharedCtor = function(data, id, options, fn) {
     const Model = this;
 
-    const isRemoteInvocationWithOptions = typeof data !== 'object' &&
-      typeof id === 'object' &&
-      typeof options === 'function';
+    const isRemoteInvocationWithOptions =
+      typeof data !== 'object' && typeof id === 'object' && typeof options === 'function';
     if (isRemoteInvocationWithOptions) {
       // sharedCtor(id, options, fn)
       fn = options;
@@ -100,11 +101,11 @@ exports.insert = function insertREST(klass, model, config) {
       fn = id;
       options = null;
 
-      if (typeof data !== 'object') {
+      if (typeof data === 'object') {
+        id = null;
+      } else {
         id = data;
         data = null;
-      } else {
-        id = null;
       }
     }
 
@@ -116,7 +117,7 @@ exports.insert = function insertREST(klass, model, config) {
       fn(null, new Model(data));
     } else if (id) {
       const filter = {};
-      Model.findById(id, filter, function (err, model) {
+      Model.findById(id, filter, (err, model) => {
         if (err) {
           fn(err);
         } else if (model) {
@@ -194,9 +195,7 @@ exports.insert = function insertREST(klass, model, config) {
       {
         arg: 'filter',
         type: 'object',
-        description:
-          'Filter defining fields and include - must be a JSON-encoded string (' +
-          '{"something":"value"})'
+        description: 'Filter defining fields and include - must be a JSON-encoded string ({"something":"value"})'
       }
     ],
     returns: { arg: 'data', root: true },

@@ -18,29 +18,33 @@ function promiseOrCallback(callback, fn) {
     }
   }
   return new Promise((resolve, reject) => {
-    fn(function (error, res) {
-      if (error != null) {
+    fn(function(error, res) {
+      if (error !== null) {
         return reject(error);
       }
       if (arguments.length > 2) {
+        // eslint-disable-next-line prefer-rest-params
         return resolve(Array.prototype.slice.call(arguments, 1));
       }
       resolve(res);
     });
   });
-};
+}
 
 class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
-  static async beforeCreate() { }
-  static async afterCreate() { }
+  static async beforeCreate() {}
 
-  static async beforeUpdate() { }
-  static async afterUpdate() { }
+  static async afterCreate() {}
 
-  static async beforeDelete() { }
-  static async afterDelete() { }
+  static async beforeUpdate() {}
 
-  static _create(data, cb) {
+  static async afterUpdate() {}
+
+  static async beforeDelete() {}
+
+  static async afterDelete() {}
+
+  static _create(data) {
     return this.insertMany(data);
   }
 
@@ -67,19 +71,19 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
     const isExists = await this.countM({ _id: id });
     if (!isExists) {
       data._id = id;
-      return await this.create(data);
-    } else {
-      const where = { id: id };
-      await this.beforeUpdate({ data, where });
-      const instance = await this.findOneAndUpdate({ _id: id }, data, { new: true });
-      await this.afterUpdate({ data, where, instance });
-      return instance;
+      return this.create(data);
     }
+    const where = { id };
+    await this.beforeUpdate({ data, where });
+    const instance = await this.findOneAndUpdate({ _id: id }, data, { new: true });
+    await this.afterUpdate({ data, where, instance });
+    return instance;
   }
 
   static upsert(data, cb) {
     return this._upsert(data, cb);
   }
+
   // passed
   static _find(filter = {}, cb) {
     if (typeof filter === 'function') {
@@ -98,7 +102,9 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
       filter = {};
     }
     const { where, fields, skip, limit, sort } = prepareMongoOpts(filter);
-    return promiseOrCallback(cb, fn => { this.findOneM(where, fields, { skip, limit, sort }, fn); });
+    return promiseOrCallback(cb, fn => {
+      this.findOneM(where, fields, { skip, limit, sort }, fn);
+    });
   }
 
   static _findById(id, filter, cb) {
@@ -109,11 +115,15 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
     //   });
     // }
     const where = { _id: id };
-    return promiseOrCallback(cb, fn => { this.findOneM(where, fields, { skip, limit, sort }, fn); });
+    return promiseOrCallback(cb, fn => {
+      this.findOneM(where, fields, { skip, limit, sort }, fn);
+    });
   }
 
   static _count(where, cb) {
-    return promiseOrCallback(cb, fn => { this.countM(replaceMongoOp(where), fn); });
+    return promiseOrCallback(cb, fn => {
+      this.countM(replaceMongoOp(where), fn);
+    });
   }
 
   static destroyAll(where, cb) {
@@ -123,7 +133,9 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
   }
 
   static _updateAll(where, data, cb) {
-    return promiseOrCallback(cb, fn => { this.updateMany(replaceMongoOp(where), data, fn); });
+    return promiseOrCallback(cb, fn => {
+      this.updateMany(replaceMongoOp(where), data, fn);
+    });
   }
 
   static updateAll(where, data, cb) {

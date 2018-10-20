@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-exports.configure = function configureLBBoot(app, bootDir) {
+exports.configure = function(app, bootDir) {
   const files = fs.readdirSync(bootDir);
   for (const f of files) {
     if (f.length - f.lastIndexOf('.js') === 3) {

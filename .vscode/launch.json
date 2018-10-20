@@ -13,8 +13,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/s.js"
+      "name": "convert",
+      "program": "${workspaceFolder}/convert.js"
     }
   ]
 }

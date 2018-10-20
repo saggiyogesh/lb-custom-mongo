@@ -1,9 +1,9 @@
 const assert = require('assert');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 const _ds = {};
 
-exports.registerConnection = function (name, connection) {
+exports.registerConnection = function(name, connection) {
   assert(name, 'Error in DS name.');
 
   assert(!Object.keys(_ds).includes(name), `DS name already used. ${name}`);
@@ -12,16 +12,16 @@ exports.registerConnection = function (name, connection) {
   console.log('Registry registerDS');
 };
 
-exports.Model = function modelDecorator(schema, options = {}) {
+exports.Model = function(schema, options = {}) {
   options.timestamps = true;
-  if (!options.hasOwnProperty('autoIndex')) {
+  if (!Object.prototype.hasOwnProperty.call(options, 'autoIndex')) {
     options.autoIndex = false;
   }
 
-  if (!options.hasOwnProperty('versionKey')) {
+  if (!Object.prototype.hasOwnProperty.call(options, 'versionKey')) {
     options.versionKey = false;
   }
-  return (Class) => {
+  return Class => {
     const schemaInstance = new Schema(schema, options);
     schemaInstance.loadClass(Class);
     mongoose.model(Class.name, schemaInstance);

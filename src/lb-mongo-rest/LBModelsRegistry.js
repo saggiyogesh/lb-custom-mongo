@@ -1,7 +1,7 @@
 // const assert = require('assert');
 const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 // conditional $type for configured schemas
 console.log('TYPE_MODELS--', process.env.TYPE_MODELS);
@@ -12,13 +12,13 @@ if (process.env.TYPE_MODELS) {
   }
 }
 
-exports.register = function modelDecorator(Class, config, options = {}) {
+exports.register = function(Class, config, options = {}) {
   // options.timestamps = true;
-  if (!options.hasOwnProperty('autoIndex')) {
+  if (!Object.prototype.hasOwnProperty.call(options, 'autoIndex')) {
     options.autoIndex = false;
   }
 
-  if (!options.hasOwnProperty('versionKey')) {
+  if (!Object.prototype.hasOwnProperty.call(options, 'versionKey')) {
     options.versionKey = false;
   }
 
@@ -44,14 +44,14 @@ exports.register = function modelDecorator(Class, config, options = {}) {
   schemaInstance.set('toJSON', {
     virtuals: true,
     getters: true,
-    transform: function(doc, ret) {
+    transform: (doc, ret) => {
       delete ret._id;
     }
   });
 
   schemaInstance.set('toObject', {
     getters: true,
-    transform: function(doc, ret) {
+    transform: (doc, ret) => {
       delete ret._id;
     }
   });

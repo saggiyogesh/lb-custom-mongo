@@ -1,7 +1,7 @@
 const { prepareMongoOpts, changeToId } = require('../lbMongoFilter');
 module.exports = class LeanMongooseFinders {
   /**
-   * Leaned version of mongoose `find`. 
+   * Leaned version of mongoose `find`.
    * @static
    * @param {Object} filter - Same as loopback find filter
    * @returns {Promise}
@@ -13,7 +13,7 @@ module.exports = class LeanMongooseFinders {
   }
 
   /**
-   * Leaned version of mongoose `findOne`. 
+   * Leaned version of mongoose `findOne`.
    * @static
    * @param {Object} filter - Same as loopback find filter
    * @returns {Promise}
@@ -25,7 +25,7 @@ module.exports = class LeanMongooseFinders {
   }
 
   /**
-   * Leaned version of mongoose `findById`. 
+   * Leaned version of mongoose `findById`.
    * @static
    * @param {String} id - Model id
    * @param {Object} filter - Same as loopback find filter

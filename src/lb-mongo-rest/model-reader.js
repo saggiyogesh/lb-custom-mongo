@@ -12,7 +12,7 @@ const _modelMixins = new Map();
 
 const moongooseLBConflictingMethods = ['find', 'findOne', 'findById', 'count'];
 let _mixinsDir;
-exports.init = function i(app, modelsDir, mixinsDir) {
+exports.init = function(app, modelsDir, mixinsDir) {
   const remotes = init(app);
   app.models = {};
   _mixinsDir = mixinsDir;
@@ -57,13 +57,12 @@ function configureModels(app, modelsDir) {
       const config = _modelsConfig.get(modelName);
       const exec = _modelsExec.get(modelName);
       let module;
-      if (!exec) {
-        class Klass extends BaseModel { }
-        module = Klass;
-      } else {
+      if (exec) {
         module = exec.module;
-        assert(module.toString().indexOf('extends BaseModel') > -1,
-          `Model '${modelName}' must extend 'BaseModel'`);
+        assert(module.toString().indexOf('extends BaseModel') > -1, `Model '${modelName}' must extend 'BaseModel'`);
+      } else {
+        class Klass extends BaseModel {}
+        module = Klass;
       }
 
       insert(module, config);
@@ -73,7 +72,7 @@ function configureModels(app, modelsDir) {
       const model = connection.models[modelName];
       try {
         require(path.resolve(modelsDir, modelName, `remotes.js`))(model);
-      } catch (e) { }
+      } catch (e) {}
 
       for (const m of moongooseLBConflictingMethods) {
         resolveMongooseLBMethods(model, m);
@@ -85,7 +84,7 @@ function configureModels(app, modelsDir) {
       model.schemaDef = config.schema;
 
       if (_modelMixins.has(modelName)) {
-        _modelMixins.get(modelName).forEach((mixin) => {
+        _modelMixins.get(modelName).forEach(mixin => {
           mixin(model);
         });
       }
@@ -93,16 +92,16 @@ function configureModels(app, modelsDir) {
       app.models[modelName] = model;
     }
   }
-};
+}
 
-exports.loadMixin = function loadMixin(model, mixinPath) {
+exports.loadMixin = function(model, mixinPath) {
   const { name } = model;
   const p = path.resolve(_mixinsDir, mixinPath);
   let arr = [];
-  if (!_modelMixins.has(name)) {
-    _modelMixins.set(model.name, arr);
-  } else {
+  if (_modelMixins.has(name)) {
     arr = _modelMixins.get(model.name);
+  } else {
+    _modelMixins.set(model.name, arr);
   }
   arr.push(require(p));
 };
