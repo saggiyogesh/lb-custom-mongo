@@ -3,7 +3,7 @@ import axios from 'axios';
 const getPort = require('get-port');
 const sleep = require('then-sleep');
 const { ObjectId } = require('mongodb');
-const { randomStr } = require('./TestUtils');
+const { randomStr, isObjectIdInstance } = require('./TestUtils');
 let url, app;
 
 function afterAppStarted() {
@@ -93,8 +93,10 @@ test('check for id as string', async t => {
   const f = await findByIdN(ObjectId(c.id));
   t.is(typeof c.id, 'string');
 
-  t.truthy(f.id instanceof ObjectId);
-  t.truthy(c._id instanceof ObjectId);
+  t.truthy(isObjectIdInstance(f.id));
+  t.truthy(isObjectIdInstance(c._id));
+
+  t.falsy(isObjectIdInstance(c._id.toString()));
 
   t.truthy(equals(f.id, c._id));
 });

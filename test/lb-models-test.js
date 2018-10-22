@@ -3,7 +3,7 @@ import axios from 'axios';
 const getPort = require('get-port');
 const sleep = require('then-sleep');
 const { ObjectId } = require('mongodb');
-const { randomStr } = require('./TestUtils');
+const { randomStr, isObjectIdInstance } = require('./TestUtils');
 let url, app;
 
 function afterAppStarted() {
@@ -20,7 +20,7 @@ async function startApp(params) {
   await sleep(100);
 }
 
-test.before(async t => {
+test.before(async () => {
   let port = 5000;
   process.env.PORT = port = await getPort();
   await startApp();
@@ -35,7 +35,7 @@ test.before(async t => {
 });
 
 async function create(model = 'Demo', _id) {
-  return await app.models[model].create({
+  return app.models[model].create({
     _id,
     email: 'saggiyogesh@gmail.com',
     name: 'yoo'
@@ -43,7 +43,7 @@ async function create(model = 'Demo', _id) {
 }
 
 async function findById(id, model = 'Demo') {
-  return await app.models[model].findById(id);
+  return app.models[model].findById(id);
 }
 
 test('check for id as ObjectId', async t => {
@@ -52,7 +52,7 @@ test('check for id as ObjectId', async t => {
   t.is(typeof c.id, 'string'); // maintain compatibility with old loopback code
 
   const f = await findById(ObjectId(c._id));
-  t.truthy(f._id instanceof ObjectId);
+  t.truthy(isObjectIdInstance(f._id));
   t.is(typeof f.id, 'string');
 });
 
