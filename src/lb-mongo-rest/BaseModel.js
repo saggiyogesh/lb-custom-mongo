@@ -55,8 +55,9 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo, Populate) {
     if (Array.isArray(instance)) {
       instance = instance[0];
     }
-    await this.afterCreate({ instance });
-    return instance;
+    const ctx = { instance };
+    await this.afterCreate(ctx);
+    return ctx.instance;
   }
 
   // passed
