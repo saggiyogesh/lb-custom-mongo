@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const Promise = require('bluebird');
 const LeanMongooseFinders = require('./LeanMongooseFinders');
 const NativeMongo = require('./NativeMongo');
+const Populate = require('./Populate');
 const mix = require('../mix');
 const { prepareMongoOpts, replaceMongoOp } = require('../lbMongoFilter');
 /**
@@ -30,7 +31,7 @@ function promiseOrCallback(callback, fn) {
   });
 };
 
-class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
+class BaseModel extends mix(LeanMongooseFinders, NativeMongo, Populate) {
   static async beforeCreate() { }
   static async afterCreate() { }
 
