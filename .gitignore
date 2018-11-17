@@ -22,4 +22,4 @@ dist
 .history
 replaceDBMethods.js
 schemaValidate.js
-schema/
+schema1
