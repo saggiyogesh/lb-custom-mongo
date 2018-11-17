@@ -30,6 +30,7 @@ exports.register = function(Class, config, options = {}) {
   options.id = false;
   options.minimize = false;
   options.collection = Class.name;
+
   const schemaInstance = new Schema(config.properties, options);
   schemaInstance.loadClass(Class);
 
@@ -55,6 +56,7 @@ exports.register = function(Class, config, options = {}) {
       delete ret._id;
     }
   });
+
   mongoose.model(config.name, schemaInstance);
 };
 

@@ -1,10 +1,10 @@
-module.exports = function (Model) {
-  Model.mixinStaticMethod = async function (id) {
+module.exports = function(Model) {
+  Model.mixinStaticMethod = async function(id) {
     return { count: await Model.count() };
   };
 
-  Model.mixinMethod = function (id, next) {
-    (async function () {
+  Model.mixinMethod = function(id, next) {
+    (async function() {
       try {
         next(null, {
           id,
@@ -18,13 +18,15 @@ module.exports = function (Model) {
   };
 
   Model.remoteMethod('mixinMethod', {
-    accepts: [{
-      arg: 'id',
-      type: 'string',
-      http: {
-        source: 'query'
+    accepts: [
+      {
+        arg: 'id',
+        type: 'string',
+        http: {
+          source: 'query'
+        }
       }
-    }],
+    ],
     http: {
       path: '/mixinMethod',
       verb: 'get'

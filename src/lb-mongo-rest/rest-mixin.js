@@ -18,6 +18,14 @@ exports.init = function(app) {
         if (error instanceof Error) {
           console.log(error);
         }
+        if (req.body.password) {
+          delete req.body.password;
+        }
+
+        if (req.body.confirmPassword) {
+          delete req.body.confirmPassword;
+        }
+
         console.log('Remoting Error: ', req.method, req.url, req.query, req.body);
         next();
       }

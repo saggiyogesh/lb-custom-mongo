@@ -89,7 +89,7 @@ module.exports = class NativeMongo {
    * Mongo native `count` helper method
    *
    * Example:
-   *     const r = await app.models.Demo.aggregateN([{ $match: { email: 'saggiyogesh@gmail.com' } }]);
+   *     let r = await app.models.Demo.countN({ email: 'saggiyogesh@gmail.com' });
    *
    * @static
    * @param {Object} where - Same as loopback where clause

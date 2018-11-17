@@ -1,26 +1,17 @@
 module.exports = {
   name: 'Demo',
   properties: {
-    email: {
-      $type: String
-    },
-    name: {
-      $type: String
-    },
+    email: String,
+    name: String,
     no: {
       $type: Number,
       default: 10
     },
-    creationTime: {
-      $type: Date
-    },
-    lastUpdationTime: {
-      $type: Date
-    },
-    thumbnail: {
-      $type: Object
-    }
+    creationTime: Date,
+    lastUpdationTime: Date,
+    thumbnail: {}
   },
+  topLevelRequiredFields: ['email', 'name'],
   lilACL: {
     methods: '*'
   }

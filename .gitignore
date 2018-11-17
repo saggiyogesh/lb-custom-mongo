@@ -20,3 +20,6 @@ npm-debug.log
 dist
 *.log
 .history
+replaceDBMethods.js
+schemaValidate.js
+schema/

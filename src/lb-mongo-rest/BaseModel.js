@@ -1,37 +1,13 @@
 const { ObjectId } = require('mongodb');
-const Promise = require('bluebird');
+const { promiseOrCallback } = require('mongoose/lib/utils');
+
 const LeanMongooseFinders = require('./LeanMongooseFinders');
 const NativeMongo = require('./NativeMongo');
+const Populate = require('./Populate');
 const mix = require('../mix');
 const { prepareMongoOpts, replaceMongoOp } = require('../lbMongoFilter');
-/**
- * copied from mongoose utils.js
- */
-function promiseOrCallback(callback, fn) {
-  if (typeof callback === 'function') {
-    try {
-      return fn(callback);
-    } catch (error) {
-      return process.nextTick(() => {
-        throw error;
-      });
-    }
-  }
-  return new Promise((resolve, reject) => {
-    fn(function(error, res) {
-      if (error !== null) {
-        return reject(error);
-      }
-      if (arguments.length > 2) {
-        // eslint-disable-next-line prefer-rest-params
-        return resolve(Array.prototype.slice.call(arguments, 1));
-      }
-      resolve(res);
-    });
-  });
-}
 
-class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
+class BaseModel extends mix(LeanMongooseFinders, NativeMongo, Populate) {
   static async beforeCreate() {}
 
   static async afterCreate() {}
@@ -45,6 +21,32 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
   static async afterDelete() {}
 
   static _create(data) {
+    if (this.collection._validateMany) {
+      // validate data first by jsonvalidator, if Model configured & in TYPES_MODEL env var
+      const err = this.collection._validateMany(data);
+      if (err) {
+        throw err;
+      }
+    }
+
+    // create mongoose doc & override validate fn
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+    data = data.map(d => {
+      const doc = new this(d);
+
+      // overriding mongoose validate doc validation to skip mongoose schema validation while inserting.
+      doc.validate = function(options, callback) {
+        if (typeof options === 'function') {
+          callback = options;
+          options = null;
+        }
+        return promiseOrCallback(callback, fn => fn(null, true));
+      };
+      return doc;
+    });
+
     return this.insertMany(data);
   }
 
@@ -58,8 +60,9 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
     if (Array.isArray(instance)) {
       instance = instance[0];
     }
-    await this.afterCreate({ instance });
-    return instance;
+    const ctx = { instance };
+    await this.afterCreate(ctx);
+    return ctx.instance;
   }
 
   // passed
@@ -168,9 +171,15 @@ class BaseModel extends mix(LeanMongooseFinders, NativeMongo) {
     // id = coerceId(id);
     const currentInstance = this._doc;
     const where = { id };
-    data.id = id;
+    // data.id = id;
     await this.constructor.beforeUpdate({ currentInstance, where, data });
-    const instance = await this.constructor.findOneAndUpdate({ _id: id }, data, { new: true });
+    data = { $set: data };
+
+    // using mongo method instead of mongoose to avoid casting of values done by mongoose
+    const { value } = await this.collection.findOneAndUpdate({ _id: id }, data, { returnOriginal: false });
+
+    // creating mongoose model instance to return
+    const instance = new this.constructor(value);
     await this.constructor.afterUpdate({ instance, where, data });
     return instance;
   }

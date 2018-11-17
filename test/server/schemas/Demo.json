@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "no": {
+      "type": "number"
+    },
+    "creationTime": {
+      "bsonType": "date"
+    },
+    "lastUpdationTime": {
+      "bsonType": "date"
+    },
+    "thumbnail": {},
+    "_id": {
+      "bsonType": "objectId"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "email",
+    "name"
+  ]
+}

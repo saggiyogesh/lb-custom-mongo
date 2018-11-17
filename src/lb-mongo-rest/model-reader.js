@@ -4,6 +4,7 @@ const assert = require('assert');
 const { init, insert, restify } = require('./rest-mixin');
 const { register } = require('./LBModelsRegistry');
 const BaseModel = require('./BaseModel');
+const InjectValidator = require('../schema/InjectValidator');
 
 const _modelsExec = new Map();
 const _modelsConfig = new Map();
@@ -27,6 +28,7 @@ function resolveMongooseLBMethods(model, name) {
 }
 
 function configureModels(app, modelsDir) {
+  const validationDB = app.get('validationDB');
   console.log('modelsdir', modelsDir);
   const dirs = fs.readdirSync(modelsDir);
   for (const dirName of dirs) {
@@ -90,6 +92,9 @@ function configureModels(app, modelsDir) {
       }
       restify(modelName, model);
       app.models[modelName] = model;
+
+      // inject validator
+      new InjectValidator(model, validationDB).init();
     }
   }
 }

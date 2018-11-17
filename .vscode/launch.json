@@ -8,13 +8,30 @@
       "type": "node",
       "request": "launch",
       "name": "server-Launch Program",
-      "program": "${workspaceFolder}/test/server/server.js"
+      "program": "${workspaceFolder}/test/server/server.js",
+      "env": {
+        "TYPE_MODELS": "Demo"
+      }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "convert",
-      "program": "${workspaceFolder}/convert.js"
+      "program": "${workspaceFolder}/run/dryRun.js",
+      "env": {
+        "TYPE_MODELS": "Demo",
+        "CWD": "/Users/yogesh/workspace/lil-projects/loopback-custom-mongo/test"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "replaceDBMethods.js",
+      "program": "${workspaceFolder}/replaceDBMethods.js",
+      "env": {
+        "TYPE_MODELS": "Demo",
+        "CWD": "/Users/yogesh/workspace/lil-projects/loopback-custom-mongo/test"
+      }
     }
   ]
 }
