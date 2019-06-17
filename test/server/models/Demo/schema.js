@@ -23,5 +23,9 @@ module.exports = {
   },
   lilACL: {
     methods: '*'
+  },
+  indexes: {
+    emailId: {fields: 'email'},
+    name: {fields: 'name'}
   }
 };

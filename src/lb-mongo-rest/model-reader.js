@@ -3,6 +3,7 @@ const path = require('path');
 const assert = require('assert');
 const { init, insert, restify } = require('./rest-mixin');
 const { register } = require('./LBModelsRegistry');
+const { createIndex } = require('./model-indexes.js');
 const BaseModel = require('./BaseModel');
 
 const _modelsExec = new Map();
@@ -65,10 +66,8 @@ function configureModels(app, modelsDir) {
         assert(module.toString().indexOf('extends BaseModel') > -1,
           `Model '${modelName}' must extend 'BaseModel'`);
       }
-
       insert(module, config);
       register(module, config.schema);
-
       const connection = app.get('db');
       const model = connection.models[modelName];
       try {
@@ -91,6 +90,7 @@ function configureModels(app, modelsDir) {
       }
       restify(modelName, model);
       app.models[modelName] = model;
+      createIndex(model, config);
     }
   }
 };
