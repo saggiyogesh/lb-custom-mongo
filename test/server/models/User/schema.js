@@ -22,7 +22,7 @@ module.exports = {
     methods: '*'
   },
   indexes: {
-    emailId: {fields: 'email', unique: true},
+    emailId: {fields: 'email'},
     name: {fields: 'name'},
     nameEmail: {fields: ['name', 'email']}
   }

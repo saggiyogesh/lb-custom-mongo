@@ -27,6 +27,7 @@ module.exports = {
   indexes: {
     emailId: {fields: 'email'},
     name: {fields: 'name'},
-    num: {fields: 'no', unique: true}
+    num: {fields: 'no', unique: true},
+    dataI: {fields: 'data.fname'}
   }
 };
