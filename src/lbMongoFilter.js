@@ -27,9 +27,13 @@ exports.modifySortForMongo = memoize(function modifySortForMongo(sortStr) {
   if (!sortStr) {
     return;
   }
-  const arr = sortStr.split(/\s+/);
-  const s = {};
-  s[arr[0]] = arr[1] === 'ASC' ? 1 : -1;
+  let s = {};
+  if (typeof sortStr === 'string') {
+    const arr = sortStr.split(/\s+/);
+    s[arr[0]] = arr[1] === 'ASC' ? 1 : -1;
+  } else {
+    s = sortStr;
+  }
   return s;
 });
 
