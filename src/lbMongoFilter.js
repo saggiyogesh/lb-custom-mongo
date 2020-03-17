@@ -34,6 +34,7 @@ exports.modifySortForMongo = memoize(function modifySortForMongo(sortStr) {
   } else {
     s = sortStr;
   }
+  return s;
 });
 
 exports.changeToId = function changeToId(data) {
