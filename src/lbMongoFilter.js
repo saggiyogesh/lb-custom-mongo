@@ -27,10 +27,13 @@ exports.modifySortForMongo = memoize(function modifySortForMongo(sortStr) {
   if (!sortStr) {
     return;
   }
-  const arr = sortStr.split(/\s+/);
-  const s = {};
-  s[arr[0]] = arr[1] === 'ASC' ? 1 : -1;
-  return s;
+  let s = {};
+  if (typeof sortStr === 'string') {
+    const arr = sortStr.split(/\s+/);
+    s[arr[0]] = arr[1] === 'ASC' ? 1 : -1;
+  } else {
+    s = sortStr;
+  }
 });
 
 exports.changeToId = function changeToId(data) {
