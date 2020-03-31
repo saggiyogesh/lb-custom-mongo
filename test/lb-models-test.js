@@ -35,11 +35,11 @@ test.before(async t => {
   console.log('app.models', Object.keys(app.models));
 });
 
-async function create(model = 'Demo', _id) {
+async function create(model = 'Demo', _id, name = 'yoo') {
   return await app.models[model].create({
     _id,
     email: 'saggiyogesh@gmail.com',
-    name: 'yoo'
+    name
   });
 }
 
@@ -72,4 +72,14 @@ test('check for id as String and valid ObjectId', async t => {
   const f1 = await findById(c1.id, 'User');
   t.is(typeof f1.id, 'string');
   t.truthy(ObjectId.isValid(f1.id));
+});
+
+test('test for memo find fns returning same results', async t => {
+  const c = await create();
+
+  const f = await findById(c.id);
+  const f1 = await findById(c.id);
+  t.deepEqual(f, f1);
+
+  // let c = await create();
 });
