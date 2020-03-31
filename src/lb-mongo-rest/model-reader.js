@@ -1,11 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
+const moize = require('moize').default;
 const { init, insert, restify } = require('./rest-mixin');
 const { register } = require('./LBModelsRegistry');
 const { createIndex } = require('./model-indexes.js');
 const BaseModel = require('./BaseModel');
 
+const { MEMOIZED_COLS = '', MEMO_MAX_AGE = 100 * 1000 } = process.env;
+
+const memoizedColls = MEMOIZED_COLS.split(',') || [];
 const _modelsExec = new Map();
 const _modelsConfig = new Map();
 const _modelMixins = new Map();
@@ -25,6 +29,28 @@ function resolveMongooseLBMethods(model, name) {
   const mMeth = model[name];
   model[name] = model[`_${name}`];
   model[`${name}M`] = mMeth;
+}
+
+const fnsToMemoize = ['find', 'findOne', 'findN', 'findOneN'];
+
+function memoizer(model) {
+  fnsToMemoize.forEach(name => {
+    const fn = model[name];
+
+    const memoizedFn = moize(function () {
+      console.log('in memo find----', arguments);
+      return fn.apply(model, arguments || []);
+    }, {
+      isDeepEqual: true,
+      isPromise: true,
+      onCacheHit: (cache, options, moized) => {
+        console.log('-------->>> cache hit', name, model.modelName, cache.keys);
+      },
+      maxAge: MEMO_MAX_AGE
+    });
+
+    model[name] = memoizedFn;
+  });
 }
 
 function configureModels(app, modelsDir) {
@@ -90,6 +116,10 @@ function configureModels(app, modelsDir) {
       }
       restify(modelName, model);
       app.models[modelName] = model;
+
+      modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
+
+      memoizedColls.includes(modelName) && memoizer(model);
       createIndex(model, config);
     }
   }
