@@ -32,10 +32,10 @@ function resolveMongooseLBMethods(model, name) {
   model[`${name}M`] = mMeth;
 }
 
-const fnsToMemoize = ['find', 'findOne', 'findN', 'findOneN'];
+const fnsToMemoize = ['find', 'findOne', 'findN', 'findOneN', 'findById', 'findByIdN'];
 
 function memoizer(model) {
-  console.log('memoizer--', model);
+  console.log('memoizer--', model.modelName);
   fnsToMemoize.forEach(name => {
     const fn = model[name];
 
