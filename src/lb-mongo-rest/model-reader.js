@@ -9,6 +9,7 @@ const BaseModel = require('./BaseModel');
 
 const { MEMOIZED_COLS = '', MEMO_MAX_AGE = 100 * 1000 } = process.env;
 
+console.log('MEMOIZED_COLS--', MEMOIZED_COLS);
 const memoizedColls = MEMOIZED_COLS.split(',') || [];
 const _modelsExec = new Map();
 const _modelsConfig = new Map();
