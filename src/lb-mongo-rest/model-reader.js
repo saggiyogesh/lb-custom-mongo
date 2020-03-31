@@ -7,10 +7,10 @@ const { register } = require('./LBModelsRegistry');
 const { createIndex } = require('./model-indexes.js');
 const BaseModel = require('./BaseModel');
 
-const { MEMOIZED_COLS = '', MEMO_MAX_AGE = 100 * 1000 } = process.env;
+const { MEMOIZED_MODELS = '', MEMO_MAX_AGE = 100 * 1000 } = process.env;
 
-console.log('MEMOIZED_COLS--', MEMOIZED_COLS);
-const memoizedColls = MEMOIZED_COLS.split(',') || [];
+console.log('MEMOIZED_MODELS--', MEMOIZED_MODELS);
+const memoizedColls = MEMOIZED_MODELS.split(',') || [];
 const _modelsExec = new Map();
 const _modelsConfig = new Map();
 const _modelMixins = new Map();
@@ -35,6 +35,7 @@ function resolveMongooseLBMethods(model, name) {
 const fnsToMemoize = ['find', 'findOne', 'findN', 'findOneN'];
 
 function memoizer(model) {
+  console.log('memoizer--', model);
   fnsToMemoize.forEach(name => {
     const fn = model[name];
 

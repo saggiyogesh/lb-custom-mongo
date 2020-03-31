@@ -6,7 +6,6 @@ const { ObjectId } = require('mongodb');
 const { randomStr } = require('./TestUtils');
 let url, app;
 
-process.env.MEMOIZED_COLS = 'Demo';
 function afterAppStarted() {
   return new Promise((resolve, reject) => {
     process.on('appStarted', function () {
