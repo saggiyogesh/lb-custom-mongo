@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "eslint src/**/*.js",
     "test": "TYPE_MODELS=Demo MEMOIZED_MODELS=Demo ava test/*-test.js",
-    "dev": "nodemon --watch src --exec babel-node test/server/server.js"
+    "dev": "TYPE_MODELS=Demo MEMOIZED_MODELS=Demo nodemon --watch src --exec babel-node test/server/server.js"
   },
   "private": true,
   "dependencies": {
