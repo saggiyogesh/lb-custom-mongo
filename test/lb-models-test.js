@@ -79,13 +79,26 @@ test('test for memo find fns returning same results', async t => {
   const f = await findById(c.id);
   const f1 = await findById(c.id);
   t.deepEqual(f, f1);
+});
 
+async function testTime(id) {
+  const t = Date.now();
+  await app.models.Demo.findOne({ _id: id });
+  return Date.now() - t;
+}
+
+test('test memo time, second find method call will take less time', async t => {
+  const c = await create();
+
+  const f = await testTime(c.id);
+  const f1 = await testTime(c.id);
+
+  console.log('--> time', f, f1);
+  t.is(f1 < f, true);
 });
 
 test('test memo of find method in custom class static method', async t => {
-
   const f = await app.models.Demo.customFind();
   const f1 = await app.models.Demo.customFind();
   t.deepEqual(f, f1);
-
 });
