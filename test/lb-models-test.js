@@ -80,5 +80,12 @@ test('test for memo find fns returning same results', async t => {
   const f1 = await findById(c.id);
   t.deepEqual(f, f1);
 
-  // let c = await create();
+});
+
+test('test memo of find method in custom class static method', async t => {
+
+  const f = await app.models.Demo.customFind();
+  const f1 = await app.models.Demo.customFind();
+  t.deepEqual(f, f1);
+
 });
