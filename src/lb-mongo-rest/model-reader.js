@@ -35,10 +35,10 @@ function resolveMongooseLBMethods(model, name) {
 const fnsToMemoize = ['find', 'findOne', 'findN', 'findOneN', 'findById', 'findByIdN'];
 
 function transformArgs(args) {
-  console.log('transformArgs', args);
+  // console.log('transformArgs', args);
   const last = args[args.length - 1];
   if (typeof last === 'function') {
-    console.log('last', last);
+    // console.log('last', last);
     args.pop(); // remove this callback
   }
   return args;
@@ -50,16 +50,16 @@ function memoizer(model) {
     const fn = model[name];
 
     const memoizedFn = moize(function () {
-      console.log('in memo find----', arguments);
+      // console.log('in memo find----', arguments);
       const args = [...arguments];
       transformArgs(args);
       return fn.apply(model, args);
     }, {
       isDeepEqual: true,
       isPromise: true,
-      onCacheHit: (cache, options, moized) => {
-        console.log('-------->>> cache hit', name, model.modelName, cache.keys);
-      },
+      // onCacheHit: (cache, options, moized) => {
+      //   console.log('-------->>> cache hit', name, model.modelName, cache.keys);
+      // },
       maxAge: MEMO_MAX_AGE,
       transformArgs
     });
