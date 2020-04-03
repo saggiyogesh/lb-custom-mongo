@@ -4,14 +4,15 @@
   "main": "src/lb-mongo-rest/index.js",
   "scripts": {
     "lint": "eslint src/**/*.js",
-    "test": "TYPE_MODELS=Demo ava test/*-test.js",
-    "dev": "nodemon --watch src --exec babel-node test/server/server.js"
+    "test": "TYPE_MODELS=Demo MEMOIZED_MODELS=Demo ava test/*-test.js",
+    "dev": "TYPE_MODELS=Demo MEMOIZED_MODELS=Demo nodemon --watch src --exec babel-node test/server/server.js"
   },
   "private": true,
   "dependencies": {
     "bluebird": "^3.7.2",
     "inflection": "^1.12.0",
     "memoizee": "^0.4.14",
+    "moize": "^5.4.5",
     "mongoose": "^5.8.4",
     "strong-remoting": "3.10.0"
   },

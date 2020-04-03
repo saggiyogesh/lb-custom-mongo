@@ -8,7 +8,12 @@
       "type": "node",
       "request": "launch",
       "name": "server-Launch Program",
-      "program": "${workspaceFolder}/test/server/server.js"
+      "program": "${workspaceFolder}/test/server/server.js",
+      "env": {
+        "MONGO_URL": "mongodb://to:yogesh12@ds051630.mlab.com:51630/mydb",
+        "MEMOIZED_MODELS": "Demo",
+        "TYPE_MODELS": "Demo"
+      }
     },
     {
       "type": "node",

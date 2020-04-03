@@ -1,11 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
+const moize = require('moize').default;
 const { init, insert, restify } = require('./rest-mixin');
 const { register } = require('./LBModelsRegistry');
 const { createIndex } = require('./model-indexes.js');
 const BaseModel = require('./BaseModel');
 
+const { MEMOIZED_MODELS = '', MEMO_MAX_AGE = 100 * 1000 } = process.env;
+
+console.log('MEMOIZED_MODELS--', MEMOIZED_MODELS);
+const memoizedModels = MEMOIZED_MODELS.split(',') || [];
 const _modelsExec = new Map();
 const _modelsConfig = new Map();
 const _modelMixins = new Map();
@@ -25,6 +30,42 @@ function resolveMongooseLBMethods(model, name) {
   const mMeth = model[name];
   model[name] = model[`_${name}`];
   model[`${name}M`] = mMeth;
+}
+
+const fnsToMemoize = ['find', 'findOne', 'findN', 'findOneN', 'findById', 'findByIdN'];
+
+function transformArgs(args) {
+  // console.log('transformArgs', args);
+  const last = args[args.length - 1];
+  if (typeof last === 'function') {
+    // console.log('last', last);
+    args.pop(); // remove this callback
+  }
+  return args;
+}
+
+function memoizer(model) {
+  console.log('memoizer--', model.modelName);
+  fnsToMemoize.forEach(name => {
+    const fn = model[name];
+
+    const memoizedFn = moize(function () {
+      // console.log('in memo find----', arguments);
+      const args = [...arguments];
+      transformArgs(args);
+      return fn.apply(model, args);
+    }, {
+      isDeepEqual: true,
+      isPromise: true,
+      // onCacheHit: (cache, options, moized) => {
+      //   console.log('-------->>> cache hit', name, model.modelName, cache.keys);
+      // },
+      maxAge: MEMO_MAX_AGE,
+      transformArgs
+    });
+
+    model[name] = memoizedFn;
+  });
 }
 
 function configureModels(app, modelsDir) {
@@ -90,6 +131,10 @@ function configureModels(app, modelsDir) {
       }
       restify(modelName, model);
       app.models[modelName] = model;
+
+      modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
+
+      memoizedModels.includes(modelName) && memoizer(model);
       createIndex(model, config);
     }
   }

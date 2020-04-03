@@ -115,19 +115,22 @@ exports.insert = function insertREST(klass, model, config) {
     } else if (data) {
       fn(null, new Model(data));
     } else if (id) {
-      const filter = {};
-      Model.findById(id, filter, function (err, model) {
-        if (err) {
-          fn(err);
-        } else if (model) {
-          fn(null, model);
-        } else {
-          err = new Error(`could not find a model with id: ${id}`);
-          err.statusCode = 404;
-          err.code = 'MODEL_NOT_FOUND';
+      (async function () {
+        try {
+          const filter = {};
+          const model = await Model.findById(id, filter);
+          if (model) {
+            fn(null, model);
+          } else {
+            const err = new Error(`could not find a model with id: ${id}`);
+            err.statusCode = 404;
+            err.code = 'MODEL_NOT_FOUND';
+            fn(err);
+          }
+        } catch (err) {
           fn(err);
         }
-      });
+      })();
     } else {
       fn(new Error('must specify an {{id}} or {{data}}'));
     }

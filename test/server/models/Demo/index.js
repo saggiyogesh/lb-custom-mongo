@@ -16,6 +16,10 @@ class Demo extends BaseModel {
     return demo;
   }
 
+  static async customFind() {
+    return this.find({ email: 'saggiyogesh@gmail.com' });
+  }
+
   static native() {
     return this.findOneN();
   }
