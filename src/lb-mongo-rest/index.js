@@ -13,7 +13,7 @@ exports.init = async function lbMongoInit(app, { modelsDir, bootDir, mixinsDir }
       autoIndex: false,
       reconnectTries: Number.MAX_VALUE,
       reconnectInterval: 500,
-      poolSize: 10,
+      poolSize: 100,
       bufferMaxEntries: 0
     });
     console.log('DB connected ', db.connections[0].name);
