@@ -20,4 +20,4 @@ jobs:
           git config user.email "gh-actions@lbcustommongo.gh"
           git config user.name "GH-Actions-Bot"
           npm i -g np
-          np patch --yolo
+          np minor --yolo
