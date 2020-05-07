@@ -4,6 +4,8 @@ const { configure } = require('./lbboot-reader');
 
 const mongoURL = process.env.MONGO_URL || 'mongodb://127.0.0.1/lb-mongo';
 
+const poolSize = process.env.POOL_SIZE || 200;
+
 exports.init = async function lbMongoInit(app, { modelsDir, bootDir, mixinsDir }) {
   console.log('mode', modelsDir, bootDir, mixinsDir);
   try {
@@ -13,7 +15,7 @@ exports.init = async function lbMongoInit(app, { modelsDir, bootDir, mixinsDir }
       autoIndex: false,
       reconnectTries: Number.MAX_VALUE,
       reconnectInterval: 500,
-      poolSize: 100,
+      poolSize: parseInt(poolSize),
       bufferMaxEntries: 0
     });
     console.log('DB connected ', db.connections[0].name);
