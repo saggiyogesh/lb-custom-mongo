@@ -44,11 +44,11 @@ function transformArgs(args) {
   return args;
 }
 
-function memoizer(model) {
+function memoizer(model, memoizedMethods = fnsToMemoize) {
   console.log('memoizer--', model.modelName);
-  fnsToMemoize.forEach(name => {
+  memoizedMethods.forEach(name => {
     const fn = model[name];
-
+    
     const memoizedFn = moize(function () {
       // console.log('in memo find----', arguments);
       const args = [...arguments];
@@ -134,7 +134,7 @@ function configureModels(app, modelsDir) {
 
       modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
 
-      memoizedModels.includes(modelName) && memoizer(model);
+      memoizedModels.includes(modelName) && memoizer(model, config.schema.memoizedMethods);
       createIndex(model, config);
     }
   }
