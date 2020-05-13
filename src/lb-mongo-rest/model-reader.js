@@ -60,7 +60,7 @@ function memoizer(model, memoizedMethods = fnsToMemoize) {
       // onCacheHit: (cache, options, moized) => {
       //   console.log('-------->>> cache hit', name, model.modelName, cache.keys);
       // },
-      maxAge: MEMO_MAX_AGE,
+      maxAge: parseInt(MEMO_MAX_AGE),
       transformArgs
     });
 
