@@ -48,7 +48,7 @@ function memoizer(model, memoizedMethods = fnsToMemoize) {
   console.log('memoizer--', model.modelName);
   memoizedMethods.forEach(name => {
     const fn = model[name];
-    
+
     const memoizedFn = moize(function () {
       // console.log('in memo find----', arguments);
       const args = [...arguments];
