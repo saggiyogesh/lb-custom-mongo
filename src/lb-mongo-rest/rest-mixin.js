@@ -7,7 +7,7 @@ exports.init = function init(app) {
   _remotes = remoting.create({
     cors: false,
     json: {
-      limit: '20mb'
+      limit: '100mb'
     },
     urlencoded: {
       extended: true,
