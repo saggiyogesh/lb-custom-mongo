@@ -4,7 +4,7 @@ const assert = require('assert');
 const moize = require('moize').default;
 const { init, insert, restify } = require('./rest-mixin');
 const { register } = require('./LBModelsRegistry');
-const { createIndex } = require('./model-indexes.js');
+// const { createIndex } = require('./model-indexes.js');
 const BaseModel = require('./BaseModel');
 
 const { MEMOIZED_MODELS = '', MEMO_MAX_AGE = 100 * 1000 } = process.env;
@@ -135,7 +135,7 @@ function configureModels(app, modelsDir) {
       modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
 
       memoizedModels.includes(modelName) && memoizer(model, config.schema.memoizedMethods);
-      createIndex(model, config);
+      // createIndex(model, config);
     }
   }
 };
