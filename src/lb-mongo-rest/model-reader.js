@@ -135,7 +135,7 @@ function configureModels(app, modelsDir) {
       modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
 
       memoizedModels.includes(modelName) && memoizer(model, config.schema.memoizedMethods);
-      createIndex(model, config);
+      // createIndex(model, config);
     }
   }
 };
