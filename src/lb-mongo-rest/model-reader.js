@@ -132,7 +132,7 @@ function configureModels(app, modelsDir) {
       restify(modelName, model);
       app.models[modelName] = model;
 
-      modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
+      modelName === 'Demo'; // && console.log('model --->>>>', Object.keys(model));
 
       memoizedModels.includes(modelName) && memoizer(model, config.schema.memoizedMethods);
       // createIndex(model, config);
