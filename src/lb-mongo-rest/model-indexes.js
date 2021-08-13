@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 async function modelIndexes(model, config) {
   const indexes = config.schema.indexes;
   if (indexes) {
-    console.log('Indexes are present!');
+    // console.log('Indexes are present!');
     const queryArr = [], options = { background: true };
     Object.keys(indexes).forEach((obj) => {
       const { fields, unique } = indexes[obj];
@@ -20,9 +20,9 @@ async function modelIndexes(model, config) {
       }
     });
     // const response = await model.collection.createIndex({name: 1});
-    console.log('queryArr-------', queryArr.length);
+    // console.log('queryArr-------', queryArr.length);
     const response = await Promise.all(queryArr);
-    console.log('response-----------', response);
+    // console.log('response-----------', response);
   }
 };
 

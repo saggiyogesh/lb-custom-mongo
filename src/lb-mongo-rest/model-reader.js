@@ -45,7 +45,7 @@ function transformArgs(args) {
 }
 
 function memoizer(model, memoizedMethods = fnsToMemoize) {
-  console.log('memoizer--', model.modelName);
+  // console.log('memoizer--', model.modelName);
   memoizedMethods.forEach(name => {
     const fn = model[name];
 
@@ -69,12 +69,12 @@ function memoizer(model, memoizedMethods = fnsToMemoize) {
 }
 
 function configureModels(app, modelsDir) {
-  console.log('modelsdir', modelsDir);
+  // console.log('modelsdir', modelsDir);
   const dirs = fs.readdirSync(modelsDir);
   for (const dirName of dirs) {
     const modelDirPath = path.resolve(modelsDir, dirName);
     if (fs.statSync(modelDirPath).isDirectory()) {
-      console.log('isdir', modelDirPath);
+      // console.log('isdir', modelDirPath);
       const files = fs.readdirSync(modelDirPath);
       for (const f of files) {
         if (f.length - f.lastIndexOf('.js') === 3) {
@@ -132,7 +132,7 @@ function configureModels(app, modelsDir) {
       restify(modelName, model);
       app.models[modelName] = model;
 
-      modelName === 'Demo' && console.log('model --->>>>', Object.keys(model));
+      modelName === 'Demo'; // && console.log('model --->>>>', Object.keys(model));
 
       memoizedModels.includes(modelName) && memoizer(model, config.schema.memoizedMethods);
       // createIndex(model, config);
