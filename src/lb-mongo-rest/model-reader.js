@@ -74,7 +74,7 @@ function configureModels(app, modelsDir) {
   for (const dirName of dirs) {
     const modelDirPath = path.resolve(modelsDir, dirName);
     if (fs.statSync(modelDirPath).isDirectory()) {
-      console.log('isdir', modelDirPath);
+      // console.log('isdir', modelDirPath);
       const files = fs.readdirSync(modelDirPath);
       for (const f of files) {
         if (f.length - f.lastIndexOf('.js') === 3) {
